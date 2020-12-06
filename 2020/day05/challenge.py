@@ -26,6 +26,7 @@ def part1(input):
     print(max(results))
 
 def findit(input):
+    # This problem lends itself to recursion, but meh. Why increase complexity?
     seat_ids = []
     for line in input:
         rows = list(range(0,128))
