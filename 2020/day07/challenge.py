@@ -26,6 +26,14 @@ class Bags(dict):
             any_gold.append(self.holds_gold(color))
         return any(any_gold)
 
+    def bag_count(self, color_name):
+        count = []
+        for color,ct in self[color_name].items():
+            count.append(ct)
+            for i in range(0,ct):
+                count += self.bag_count(color)
+        return count
+
 def get_input(test):
     fname = 'input.list'
     if test:
@@ -42,7 +50,8 @@ def get_input(test):
 
 
 def part2(input):
-    pass
+    #input.bag_count('shiny gold')
+    print(sum(input.bag_count('shiny gold')))
 
 
 def part1(input):
@@ -64,8 +73,8 @@ def main():
     #import json
     #print(json.dumps(bags, indent=2))
 
-    print(part1(bags))
-    #part2(input)
+    #print(part1(bags))
+    part2(bags)
 
 
 if __name__ == '__main__':
