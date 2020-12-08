@@ -17,22 +17,18 @@ class GameBoy(list):
             self[self._index]()
             self._index += 1
             if self._index in self.visited:
-                #print('Index %s already visted. Bailing out' % str(self._index+1))
-                #print([i+1 for i in self.visited])
-                break
+                return False
+        return True
 
     def _nop(self, num):
         self.visited.append(self._index)
-        #print('nop')
 
     def _acc(self, num):
         self.visited.append(self._index)
-        #print('acc')
         self.acc += num
 
     def _jmp(self, num):
         self.visited.append(self._index)
-        #print('jmp')
         self._index += num
         self._index -= 1  # We're about to +1 back in boot()
 
@@ -53,7 +49,23 @@ def get_input(test):
 
 
 def part2(input):
-    pass
+    for i in range(0, len(input)):
+        if input[i].startswith('nop'):
+            oldop = 'nop'
+            newop = 'jmp'
+        elif input[i].startswith('jmp'):
+            oldop = 'jmp'
+            newop = 'nop'
+        else:
+            continue
+
+        input[i] = input[i].replace(oldop, newop)
+        gameboy = GameBoy(input)
+        if gameboy.boot():
+            print(gameboy.acc)
+            break
+
+        input[i] = input[i].replace(newop, oldop)
 
 
 def part1(input):
@@ -67,8 +79,8 @@ def main():
     args = parser.parse_args()
     input = get_input(args.test)
     gameboy = GameBoy(input)
-    part1(gameboy)
-    #part2(input)
+    #part1(gameboy)
+    part2(input)
 
 
 if __name__ == '__main__':
