@@ -21,10 +21,10 @@ class Bags(dict):
         elif not self[color_name]:
             return False
 
-        any_gold = []
         for color,ct in self[color_name].items():
-            any_gold.append(self.holds_gold(color))
-        return any(any_gold)
+            if self.holds_gold(color):
+                return True
+        return False
 
     def bag_count(self, color_name):
         count = []
