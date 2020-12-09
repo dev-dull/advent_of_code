@@ -1,5 +1,6 @@
 import argparse
 
+# I'm not sure why I keep feeling compelled to subclass an existing type....
 class xmas(list):
     def __init__(self, data, preamble_len):
         super().__init__(data)
@@ -15,6 +16,16 @@ class xmas(list):
             if v-window[i] in window[i+1:]:
                 return v,True
         return v,False
+
+    def find_sumation(self, find_sum):
+        for i in range(0,len(self)):
+            for j in range(i+1, len(self)):
+                s = sum(self[i:j])
+                if s == find_sum:
+                    return min(self[i:j]),max(self[i:j])
+                elif s >  find_sum:
+                    break
+
 
 def get_input(test):
     fname = 'input.list'
@@ -33,14 +44,16 @@ def get_input(test):
 
 
 def part2(input):
-    pass
+    find_sum = part1(input)
+    _min,_max = input.find_sumation(find_sum)
+    return '%s + %s = %s' % (_min, _max, _min+_max)
 
 
 def part1(input):
     valid = True
     while valid:
         n,valid = next(input)
-    print('invalid:', n)
+    return n
 
 
 def main():
@@ -48,8 +61,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     input = xmas(get_input(args.test), 5 if args.test else 25)
-    part1(input)
-    #part2(input)
+    #print(part1(input))
+    print(part2(input))
 
 
 if __name__ == '__main__':
