@@ -2,7 +2,7 @@ import argparse
 
 class xmas(list):
     def __init__(self, data, preamble_len):
-        super().__init__(data[preamble_len:])
+        super().__init__(data)
         self._window_start = 0
         self._window_end = preamble_len
 
