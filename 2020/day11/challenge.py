@@ -6,8 +6,8 @@ class Seat(str):
     OCCUPIED = '#'
 
     # I'm not yet sure which of these will be the most useful, so just making them all while I'm here
-    occupied = lambda self: self == '#'
-    open_seat = lambda self: self == 'L'
+    occupied = lambda self: self == self.OCCUPIED
+    open_seat = lambda self: self == self.EMPTY
     sro = lambda self: self == '.'  # Standing room only
 
 class Seats(list):
