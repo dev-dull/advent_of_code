@@ -56,9 +56,8 @@ class Navigate(dict):
         self[self.direction] += distance
 
 
-class Navigate2(Navigate):
+class Navigate2(object):
     def __init__(self):
-        super().__init__()
         self.wp_x = 10  # waypoint x and y
         self.wp_y = 1
 
