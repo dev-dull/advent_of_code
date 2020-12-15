@@ -46,8 +46,10 @@ def part1(input, end_at):
     eg = elf_game(input)
     ct = 0
     while ct < end_at+1:
+        if not ct % 100000:
+            print('%s/%s = %.2f%%' % (ct, end_at, (ct*100)/end_at), end='\r')
         spoken,ct = next(eg)
-    print(spoken, ct)
+    print('\n'+str(spoken), ct)
 
 def main():
     parser = argparse.ArgumentParser(description='Advent of code 2020 solutions by Alastair')
