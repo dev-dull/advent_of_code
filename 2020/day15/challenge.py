@@ -19,25 +19,25 @@ def get_input(test):
 
 
 def part2(input):
+    # 6007666
     part1(input, 30000000)  # clearly there's some math thing that'll get me to the answer faster, but /me gestures at my job. I'll just let this run.
 
 
 def elf_game(has_been_spoken):
     ct = len(has_been_spoken)+1
-    last_spoken_at  = list(range(1,ct))  # The turn number when the number in the parallel array was last spoken
+    spoken = dict([(s,i+1) for i,s in enumerate(has_been_spoken)])
     speak = has_been_spoken[-1]
     next_up = 0
 
     while True:
         yield (speak,ct)
         speak = next_up
-        if next_up in has_been_spoken:
-            i = has_been_spoken.index(next_up)
-            next_up = ct - last_spoken_at[i]
-            last_spoken_at[i] = ct
+        if next_up in spoken:
+            v = ct - spoken[next_up]
+            spoken[next_up] = ct
+            next_up = v
         else:
-            has_been_spoken.append(speak)
-            last_spoken_at.append(ct)
+            spoken[next_up] = ct
             next_up = 0
 
         ct += 1
@@ -59,7 +59,7 @@ def main():
     input = get_input(args.test)
     for l in input:
         #part1(l, 2020)
-        part2(input)
+        part2(l)
 
 
 if __name__ == '__main__':
