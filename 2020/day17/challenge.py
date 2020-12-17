@@ -76,11 +76,6 @@ def part1(input,x,y,z):
     for _ in range(0,6):
         input,x,y,z = _next_interval(input,x,y,z)
 
-    #ct = 0
-    #for k,v in input.items():
-    #    if v:
-    #        ct+=1
-    #print(ct)
     print(len(list(filter(lambda t: t, input.values()))))
 
 
