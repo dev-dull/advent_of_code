@@ -38,7 +38,13 @@ def get_input(test):
 
 
 def part2(input):
-    pass
+    results = []
+    for line in input:
+        line = ''.join([str(x) for x in line])
+        line = ')*('.join(line.split('*'))
+        results.append(eval('(' + line + ')'))
+
+    print(sum(results))
 
 
 def _eqs(eq):
@@ -93,8 +99,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     input = get_input(args.test)
-    part1(input)
-    #part2(input)
+    #part1(input)
+    part2(input)
 
 
 if __name__ == '__main__':
