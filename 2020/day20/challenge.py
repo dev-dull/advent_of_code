@@ -59,16 +59,30 @@ class image_blocks(dict):
         _sides.append([self[tile_name][n][-1] for n in range(0,row_ct)])  # Right
         self.sides[tile_name] = _sides
 
+    # Flip the tile horizontally
     def tile_hflip(self, tile_name):
+        #if tile_name == 2393:
+        #    print('before h-flip')
+        #    for row in self[tile_name]:
+        #        print(row)
+        #    input('press enter...')
+
+
         flipped_tile = []
         for row in self[tile_name]:
-            flipped_tile.append(self[tile_name][-1::-1])
+            flipped_tile.append(copy(self[tile_name][-1::-1]))
 
         self[tile_name] = flipped_tile
+        #if tile_name == 2393:
+        #    print('after h-flip')
+        #    for row in self[tile_name]:
+        #        break
+        #        print(row)
 
         self.refresh_sides(tile_name)
 
 
+    # Rotate the tile turn_ct number of times
     def tile_rot(self, tile_name, turn_ct):
         row_ct = len([t[0] for t in self[tile_name]])
         for _ in range(0,turn_ct):
@@ -99,7 +113,7 @@ class image_blocks(dict):
         monster_hunter = '                  # #    ##    ##    ### #  #  #  #  #  #   '
         tile_order = []
 
-	# Whichever tile is the first one I find that only has 2 matching sides gets to be the top-left corner.
+        # Whichever tile is the first one I find that only has 2 matching sides gets to be the top-left corner.
         top_left_tile_name = None
         for tile_name,sides_ct in self.matching_sides_ct.items():
             if sides_ct == 2:
@@ -117,7 +131,6 @@ class image_blocks(dict):
                     if (side in sides) or (rside in sides):
                         orientation.append(i)
 
-        #print(orientation)
         if self.LEFT in orientation and self.BOTTOM in orientation:
             self.tile_rot(top_left_tile_name, 3)
         elif self.LEFT in orientation and self.TOP in orientation:
@@ -131,9 +144,9 @@ class image_blocks(dict):
         find_my_bottom = top_left_tile_name
         orientation = -1
         while find_my_bottom:
+            # it is likely on the sweedish.
             previous_bottom =self[find_my_bottom][-1]
             left_sides.append(find_my_bottom)
-            # it is likely on the sweedish.
             find_my_bottom,orientation = self.find_tile_to_side(find_my_bottom, self.BOTTOM)
 
             if orientation == self.RIGHT:
@@ -148,9 +161,11 @@ class image_blocks(dict):
         for ls in left_sides:
             image_grid.append([])
             find_my_right = ls
+            old_right = None
             while find_my_right:
-                old_right = find_my_right
-                image_grid[-1].append(find_my_right)
+                if not old_right:
+                    old_right = find_my_right
+                    image_grid[-1].append(find_my_right)
                 find_my_right,orientation = self.find_tile_to_side(find_my_right, self.RIGHT)
 
                 if orientation == self.TOP:
@@ -164,10 +179,43 @@ class image_blocks(dict):
                 if len(image_grid[-1])<12 and not find_my_right:
                     self.tile_hflip(old_right)
                     find_my_right = old_right
+                    print(old_right)
+                else:
+                    old_right = None
 
         for row in image_grid:
             print(row)
+        #for row in self[2393]:
+        #    print('okay')
+        #    print(row)
 
+        #self.stitch_image(image_grid)
+
+    def stitch_image(self, image_grid):
+        image = []
+
+        for image_row in image_grid:
+            for tile_i in range(1,len(self[image_grid[0][0]])-1):
+                try:
+                    row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
+                    image.append(row)
+                    #print(row)
+                except Exception as e:
+                    #print(image_row[tile_i])
+                    #for row in self[image_row[tile_i]]:
+                    #    print(row)
+                    raise e
+
+        #for i,_ in enumerate(self[image_grid[0]]):
+        #    for tile_row in image_grid:
+        #        self[tile_row][i]
+
+        #for i,tile
+        #    for tile_id in img_grid[i]:
+
+        #for row_id in range(1,12-1):  # TODO: don't hard-code 12. Get the len() of the number of cols in an image block
+        #    for img_block_id in image_grid:
+        #        for img_row in self[img_block_id]:
 
 def part2(input):
     input.here_there_be_dragons()
