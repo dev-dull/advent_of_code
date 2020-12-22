@@ -37,6 +37,9 @@ class image_blocks(dict):
             _sides.append([self[tile_name][n][-1] for n in range(0,img_height)])  # Right
             self.sides[tile_name] = _sides
 
+            #if ['.', '#', '.', '.', '.', '.', '#', '#', '.', '.'] in _sides or ['.', '.', '#', '#', '.', '.', '.', '.', '#', '.'] in _sides:
+            #    print(tile_name)
+
         for tile_name,_sides in self.sides.items():
             other_tile_sides = []
             for other_name,other_sides in self.sides.items():
@@ -54,15 +57,25 @@ class image_blocks(dict):
                         side_index = other_tile_sides.index(side)
                     side.reverse()  # flip it back for later.
 
+
     def tile_rot(self, tile_name, turn_ct):
         row_ct = len([t[0] for t in self[tile_name]])
+        #if tile_name == 2393:
+            #print('rotate 2393 %s times' % turn_ct)
+            #print('before')
+            #for row in self[tile_name]:
+            #    print(row)
         for _ in range(0,turn_ct):
-            #print('rot')
             rotated_tile = []
             for rn in range(0, row_ct):
                 new_row = [t[rn] for t in self[tile_name][-1::-1]]
                 rotated_tile.append(new_row)
             self[tile_name] = copy(rotated_tile)
+
+        if tile_name == 2393:
+            print('\nafter')
+            for row in self[tile_name]:
+                print(row)
 
         _sides = []
         _sides.append(self[tile_name][0])  # Top
@@ -77,12 +90,15 @@ class image_blocks(dict):
         rside = copy(side)
         rside.reverse()
 
-        for name_on_right,sides in self.sides.items():
-            if name_on_right != tile_name:
+        #if tile_name == 2393:
+        #    print('there it is...')
+
+        for name_on_side,sides in self.sides.items():
+            if name_on_side != tile_name:
                 if side in sides:
-                    return name_on_right,sides.index(side)
+                    return name_on_side,sides.index(side)
                 elif rside in sides:
-                    return name_on_right,sides.index(rside)
+                    return name_on_side,sides.index(rside)
 
         return None,None  # We must've found the edge.
 
@@ -131,6 +147,12 @@ class image_blocks(dict):
                 self.tile_rot(find_my_bottom, 2)
             if orientation == self.LEFT:
                 self.tile_rot(find_my_bottom, 1)
+
+            if find_my_bottom in [2689, 2393, 3019]:
+                print(find_my_bottom)
+                for row in self[find_my_bottom]:
+                    print(row)
+                print('')
 
         #find_my_right = top_left_tile_name
         orientation = -1
