@@ -67,10 +67,10 @@ class image_blocks(dict):
         #        print(row)
         #    input('press enter...')
 
-
         flipped_tile = []
         for row in self[tile_name]:
-            flipped_tile.append(copy(self[tile_name][-1::-1]))
+            flipped_tile.append(copy(row[-1::-1]))
+        print('flipped', tile_name)
 
         self[tile_name] = flipped_tile
         #if tile_name == 2393:
@@ -145,7 +145,7 @@ class image_blocks(dict):
         orientation = -1
         while find_my_bottom:
             # it is likely on the sweedish.
-            previous_bottom =self[find_my_bottom][-1]
+            previous_bottom = self.sides[find_my_bottom][self.BOTTOM]
             left_sides.append(find_my_bottom)
             find_my_bottom,orientation = self.find_tile_to_side(find_my_bottom, self.BOTTOM)
 
@@ -156,6 +156,9 @@ class image_blocks(dict):
             if orientation == self.LEFT:
                 self.tile_rot(find_my_bottom, 1)
 
+            if find_my_bottom and self.sides[find_my_bottom][self.TOP] == previous_bottom[-1::-1]:
+                self.tile_hflip(find_my_bottom)
+
         ## FIND all the tiles to the right of the left-edge tiles
         orientation = -1
         for ls in left_sides:
@@ -163,9 +166,9 @@ class image_blocks(dict):
             find_my_right = ls
             old_right = None
             while find_my_right:
-                if not old_right:
-                    old_right = find_my_right
-                    image_grid[-1].append(find_my_right)
+                #if not old_right:
+                old_right = find_my_right
+                image_grid[-1].append(find_my_right)
                 find_my_right,orientation = self.find_tile_to_side(find_my_right, self.RIGHT)
 
                 if orientation == self.TOP:
@@ -176,15 +179,15 @@ class image_blocks(dict):
                     self.tile_rot(find_my_right, 1)
 
                 # TODO: find the expected image width and remove the hard-coded 12
-                if len(image_grid[-1])<12 and not find_my_right:
-                    self.tile_hflip(old_right)
-                    find_my_right = old_right
-                    print(old_right)
-                else:
-                    old_right = None
+                #if len(image_grid[-1])<12 and not find_my_right:
+                #    self.tile_hflip(old_right)
+                #    find_my_right = old_right
+                #    print(old_right)
+                #else:
+                #    old_right = None
 
         for row in image_grid:
-            print(row)
+            print('r',row)
         #for row in self[2393]:
         #    print('okay')
         #    print(row)
