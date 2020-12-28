@@ -171,8 +171,8 @@ class image_blocks(dict):
                     self.tile_hflip(find_my_right)
                     self.tile_rot(find_my_right, 2)
 
-        # for row in image_grid:
-        #     print('r', row)
+        for row in image_grid:
+            print('r', row)
 
         images = self.stitch_image(image_grid)
         # TODO: Items in `monster` only match an 'image' the size of the test data.
@@ -188,12 +188,13 @@ class image_blocks(dict):
         print(images[0].count('#'))
 
     def stitch_image(self, image_grid):
+        # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
         image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
                 image.append(row)
-                # print(row)
+                print('ALD', row)
 
         self['temp'] = image_grid
         self.tile_rot('temp', 1)  # Hijack my existing code
