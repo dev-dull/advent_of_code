@@ -1,3 +1,4 @@
+import re
 import argparse
 from copy import copy
 from collections import defaultdict
@@ -56,8 +57,8 @@ class image_blocks(dict):
         _sides = []
         _sides.append(self[tile_name][0])  # Top
         _sides.append(self[tile_name][-1])  # Bottom
-        _sides.append([self[tile_name][n][0] for n in range(0,row_ct)])  # This causes the left side to be backwards -_-
-        _sides.append([self[tile_name][n][-1] for n in range(0,row_ct)])  # Right
+        _sides.append([self[tile_name][n][0] for n in range(row_ct-1, -1, -1)])  # count down so side is in expected order
+        _sides.append([self[tile_name][n][-1] for n in range(0, row_ct)])  # Right
         self.sides[tile_name] = _sides
 
     # Flip the tile horizontally
@@ -123,7 +124,7 @@ class image_blocks(dict):
         elif self.RIGHT in orientation and self.TOP in orientation:
             self.tile_rot(top_left_tile_name, 1)
 
-        ## FIND all the tiles below the top-left tile and keep track of which tiles those are
+        # FIND all the tiles below the top-left tile and keep track of which tiles those are
         image_grid = []
         left_sides = []
         find_my_bottom = top_left_tile_name
@@ -144,13 +145,16 @@ class image_blocks(dict):
             if find_my_bottom and self.sides[find_my_bottom][self.TOP] == previous_bottom[-1::-1]:
                 self.tile_hflip(find_my_bottom)
 
-        ## FIND all the tiles to the right of the left-edge tiles
+        # FIND all the tiles to the right of the left-edge tiles
         orientation = -1
-        for ls in left_sides:
+        for ri, ls in enumerate(left_sides):
             image_grid.append([])
             find_my_right = ls
+            ci = -1
             while find_my_right:
+                ci += 1
                 image_grid[-1].append(find_my_right)
+                previous_right = self.sides[find_my_right][self.RIGHT]
                 find_my_right, orientation = self.find_tile_to_side(find_my_right, self.RIGHT)
 
                 if orientation == self.TOP:
@@ -161,29 +165,53 @@ class image_blocks(dict):
                 if orientation == self.BOTTOM:
                     self.tile_rot(find_my_right, 1)
 
-        for row in image_grid:
-            print('r', row)
+                # TODO: it should be possible to determine if we need to hflip before any other rotations
+                if find_my_right and self.sides[find_my_right][self.LEFT] == previous_right[-1::-1]:
+                    # print('needed hflip+rotate:', find_my_right)
+                    self.tile_hflip(find_my_right)
+                    self.tile_rot(find_my_right, 2)
 
-        self.stitch_image(image_grid)
+        # for row in image_grid:
+        #     print('r', row)
 
-    def stitch_image(self, image_grid):
-        monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   ')
+        images = self.stitch_image(image_grid)
+        monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
         retnuh_retsnom = copy(monster_hunter)
         retnuh_retsnom.reverse()
         monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
-        image = []
+        # The original plan was to loop through all the characters in monster_hunter and all the characters in the image
+        # and match test `monster_c == ' ' or (ord(monster_c) ^ ord(image_c) == 0)` but using regex is faster
+        monster_ct = re.findall(monsters[0], images[1])
+        print('counted N monsters:', monster_ct)
+        print(monsters)
+        print(images[0].count('#'))
 
+
+    def stitch_image(self, image_grid):
+        image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
                 image.append(row)
-                print(row)
+                # print(row)
 
-        # TODO: Rotate the image and unwind again.
+        self['temp'] = image_grid
+        self.tile_rot('temp', 1)  # Hijack my existing code
+        image_grid = self.pop('temp')
+        rot_image = []
+        for image_row in image_grid:
+            for tile_i in range(1, len(self[image_grid[0][0]])-1):
+                row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
+                rot_image.append(row)
+                # print(row)
+
         unwound = ''.join(image)
-        for monster in monsters:
-            # TODO: loop through characters and True if space or # in monster matches # in image
-            print(monster)
+        rot_unwound = ''.join(rot_image)
+        return unwound, rot_unwound
+        # print(unwound)
+        # for monster in monsters:
+        #     # TODO: loop through characters and True if space or # in monster matches # in image
+        #     print(monster)
 
 
 def part2(input):
