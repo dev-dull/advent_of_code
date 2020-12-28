@@ -175,6 +175,7 @@ class image_blocks(dict):
         #     print('r', row)
 
         images = self.stitch_image(image_grid)
+        # TODO: Items in `monster` only match an 'image' the size of the test data.
         monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
         retnuh_retsnom = copy(monster_hunter)
         retnuh_retsnom.reverse()
@@ -185,7 +186,6 @@ class image_blocks(dict):
         print('counted N monsters:', monster_ct)
         print(monsters)
         print(images[0].count('#'))
-
 
     def stitch_image(self, image_grid):
         image = []
@@ -207,6 +207,7 @@ class image_blocks(dict):
 
         unwound = ''.join(image)
         rot_unwound = ''.join(rot_image)
+        print(len(unwound), len(rot_unwound))
         return unwound, rot_unwound
         # print(unwound)
         # for monster in monsters:
