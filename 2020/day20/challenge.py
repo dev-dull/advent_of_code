@@ -94,7 +94,7 @@ class image_blocks(dict):
                 elif rside in sides:
                     return name_on_side, sides.index(rside)
 
-        return None,None  # We must've found the edge.
+        return None, None  # We must've found the edge.
 
     def here_there_be_dragons(self):
         tile_order = []
@@ -176,13 +176,14 @@ class image_blocks(dict):
 
         images = self.stitch_image(image_grid)
         # TODO: Items in `monster` only match an 'image' the size of the test data.
-        monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
+        # monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
+        monster_hunter = list('#    ##    ##    ###'.replace(' ', '.'))
         retnuh_retsnom = copy(monster_hunter)
         retnuh_retsnom.reverse()
         monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
         # The original plan was to loop through all the characters in monster_hunter and all the characters in the image
         # and match test `monster_c == ' ' or (ord(monster_c) ^ ord(image_c) == 0)` but using regex is faster
-        monster_ct = re.findall(monsters[0], images[1])
+        monster_ct = re.findall(monsters[1], images[1])  # 0,1 0,0 1,0
         print('counted N monsters:', monster_ct)
         print(monsters)
         print(images[0].count('#'))
@@ -192,7 +193,7 @@ class image_blocks(dict):
         image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
-                row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
+                row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 image.append(row)
                 print('ALD', row)
 
@@ -202,7 +203,7 @@ class image_blocks(dict):
         rot_image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
-                row = ''.join([''.join(self[tile_id][tile_i][1:-2]) for tile_id in image_row])
+                row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 rot_image.append(row)
                 # print(row)
 
