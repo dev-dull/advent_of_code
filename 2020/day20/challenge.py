@@ -213,6 +213,11 @@ class image_blocks(dict):
 
     def stitch_image(self, image_grid):
         # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
+        for image_row in image_grid:
+            print('')
+            for tile_i in range(0, len(self[image_grid[0][0]])):
+                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
+
         image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
