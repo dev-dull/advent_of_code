@@ -177,16 +177,39 @@ class image_blocks(dict):
         images = self.stitch_image(image_grid)
         # TODO: Items in `monster` only match an 'image' the size of the test data.
         # monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
-        monster_hunter = list('#    ##    ##    ###'.replace(' ', '.'))
-        retnuh_retsnom = copy(monster_hunter)
-        retnuh_retsnom.reverse()
-        monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
+
+
+        # monster_hunter = list('#    ##    ##    ###'.replace(' ', '.'))
+        # retnuh_retsnom = copy(monster_hunter)
+        # retnuh_retsnom.reverse()
+        # monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
+
+        monster_head   = re.compile('..................#.')
+        monster_middle = re.compile('#....##....##....###')
+        monster_bottom = re.compile('.#..#..#..#..#..#...')
+
+        # monster_head   = re.compile('.#..................')
+        # monster_middle = re.compile('###....##....##....#')
+        # monster_bottom = re.compile('...#..#..#..#..#..#.')
+
+        monster_ct = 0
+        for ri, line in enumerate(images[1]):
+            # print('L', line)
+            if 0 < ri < len(images[1]):
+                for match in monster_middle.finditer(line):
+                    print('matched middle', ri)
+                    if monster_head.search(images[1][ri+1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
+                        print('matched head', ri)
+                        if monster_bottom.search(images[1][ri-1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
+                            print('matched bottom', ri)
+                            monster_ct += 1
+
         # The original plan was to loop through all the characters in monster_hunter and all the characters in the image
         # and match test `monster_c == ' ' or (ord(monster_c) ^ ord(image_c) == 0)` but using regex is faster
-        monster_ct = re.findall(monsters[1], images[1])  # 0,1 0,0 1,0
+        # monster_ct = re.findall(monsters[1], images[1])  # 0,1 0,0 1,0
         print('counted N monsters:', monster_ct)
-        print(monsters)
-        print(images[0].count('#'))
+        # print(monsters)
+        print('turbulence:', ''.join(images[1]).count('#'))
 
     def stitch_image(self, image_grid):
         # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
@@ -195,7 +218,7 @@ class image_blocks(dict):
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 image.append(row)
-                print('ALD', row)
+                # print('ALD', row)
 
         self['temp'] = image_grid
         self.tile_rot('temp', 1)  # Hijack my existing code
@@ -209,8 +232,12 @@ class image_blocks(dict):
 
         unwound = ''.join(image)
         rot_unwound = ''.join(rot_image)
-        print(len(unwound), len(rot_unwound))
-        return unwound, rot_unwound
+        # print(len(unwound), len(rot_unwound))
+        # for row in image:
+        #     print('return', row)
+        # print('WTF', rot_image)
+        return image, rot_image
+        # return unwound, rot_unwound
         # print(unwound)
         # for monster in monsters:
         #     # TODO: loop through characters and True if space or # in monster matches # in image
