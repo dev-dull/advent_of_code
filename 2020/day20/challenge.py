@@ -57,7 +57,8 @@ class image_blocks(dict):
         _sides = []
         _sides.append(self[tile_name][0])  # Top
         _sides.append(self[tile_name][-1])  # Bottom
-        _sides.append([self[tile_name][n][0] for n in range(row_ct-1, -1, -1)])  # count down so side is in expected order
+        # _sides.append([self[tile_name][n][0] for n in range(row_ct-1, -1, -1)])  # count down so side is in expected order
+        _sides.append([self[tile_name][n][0] for n in range(0, row_ct)])  # This causes the left side to be backwards, but for how sides are compared, this ends up giving the expected results.
         _sides.append([self[tile_name][n][-1] for n in range(0, row_ct)])  # Right
         self.sides[tile_name] = _sides
 
@@ -160,7 +161,6 @@ class image_blocks(dict):
                 if orientation == self.TOP:
                     self.tile_rot(find_my_right, 3)
                 if orientation == self.RIGHT:
-                    # TODO: decide if we should hflip or rotate.
                     self.tile_rot(find_my_right, 2)
                 if orientation == self.BOTTOM:
                     self.tile_rot(find_my_right, 1)
@@ -184,13 +184,13 @@ class image_blocks(dict):
         # retnuh_retsnom.reverse()
         # monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
 
-        monster_head   = re.compile('..................#.')
-        monster_middle = re.compile('#....##....##....###')
-        monster_bottom = re.compile('.#..#..#..#..#..#...')
+        # monster_head   = re.compile('..................#.')
+        # monster_middle = re.compile('#....##....##....###')
+        # monster_bottom = re.compile('.#..#..#..#..#..#...')
 
-        # monster_head   = re.compile('.#..................')
-        # monster_middle = re.compile('###....##....##....#')
-        # monster_bottom = re.compile('...#..#..#..#..#..#.')
+        monster_head   = re.compile('.#..................')
+        monster_middle = re.compile('###....##....##....#')
+        monster_bottom = re.compile('...#..#..#..#..#..#.')
 
         monster_ct = 0
         for ri, line in enumerate(images[1]):
