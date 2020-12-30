@@ -184,13 +184,13 @@ class image_blocks(dict):
         # retnuh_retsnom.reverse()
         # monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
 
-        # monster_head   = re.compile('..................#.')
-        # monster_middle = re.compile('#....##....##....###')
-        # monster_bottom = re.compile('.#..#..#..#..#..#...')
+        monster_head   = re.compile('..................#.')
+        monster_middle = re.compile('#....##....##....###')
+        monster_bottom = re.compile('.#..#..#..#..#..#...')
 
-        monster_head   = re.compile('.#..................')
-        monster_middle = re.compile('###....##....##....#')
-        monster_bottom = re.compile('...#..#..#..#..#..#.')
+        # monster_head   = re.compile('.#..................')
+        # monster_middle = re.compile('###....##....##....#')
+        # monster_bottom = re.compile('...#..#..#..#..#..#.')
 
         monster_ct = 0
         for ri, line in enumerate(images[1]):
@@ -213,11 +213,6 @@ class image_blocks(dict):
 
     def stitch_image(self, image_grid):
         # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
-        for image_row in image_grid:
-            print('')
-            for tile_i in range(0, len(self[image_grid[0][0]])):
-                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
-
         image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
@@ -225,16 +220,28 @@ class image_blocks(dict):
                 image.append(row)
                 # print('ALD', row)
 
-        # TODO: This is wrong. This rotates where the tiles are positioned, but not the tiles themselves.
+        # Rotate the grid
         self['temp'] = image_grid
         self.tile_rot('temp', 1)  # Hijack my existing code
         image_grid = self.pop('temp')
+
+        # Rotate the individual tiles so everything lines up as expected
+        for tile_row in image_grid:
+            for tile_name in tile_row:
+                self.tile_rot(tile_name, 1)
+
+        # Build the rotated image and hope there isn't some pass-by-ref nonsense going with how `image` was built.
         rot_image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 rot_image.append(row)
                 # print(row)
+
+        for image_row in image_grid:
+            print('')
+            for tile_i in range(0, len(self[image_grid[0][0]])):
+                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
 
         unwound = ''.join(image)
         rot_unwound = ''.join(rot_image)
