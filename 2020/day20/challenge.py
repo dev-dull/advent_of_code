@@ -184,6 +184,11 @@ class image_blocks(dict):
         # retnuh_retsnom.reverse()
         # monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
 
+        # monster combos:
+        #  forward, images[0]: 14
+        #  forward, images[1]:  0
+        #  reverse, images[1]:  0
+        #  reverse, images[0]:  0
         monster_head   = re.compile('..................#.')
         monster_middle = re.compile('#....##....##....###')
         monster_bottom = re.compile('.#..#..#..#..#..#...')
@@ -210,6 +215,7 @@ class image_blocks(dict):
         print('counted N monsters:', monster_ct)
         # print(monsters)
         print('turbulence:', ''.join(images[0]).count('#'))
+        print('can I math?', '%s - %s * %s = %s'%(''.join(images[0]).count('#'), 15, monster_ct, ''.join(images[0]).count('#')-15*monster_ct))
 
     def stitch_image(self, image_grid):
         # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
