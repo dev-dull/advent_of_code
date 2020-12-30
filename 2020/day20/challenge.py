@@ -193,14 +193,14 @@ class image_blocks(dict):
         # monster_bottom = re.compile('...#..#..#..#..#..#.')
 
         monster_ct = 0
-        for ri, line in enumerate(images[1]):
+        for ri, line in enumerate(images[0]):
             # print('L', line)
-            if 0 < ri < len(images[1]):
+            if 0 < ri < len(images[0]):
                 for match in monster_middle.finditer(line):
                     print('matched middle', ri)
-                    if monster_head.search(images[1][ri+1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
+                    if monster_head.search(images[0][ri-1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
                         print('matched head', ri)
-                        if monster_bottom.search(images[1][ri-1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
+                        if monster_bottom.search(images[0][ri+1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
                             print('matched bottom', ri)
                             monster_ct += 1
 
@@ -209,16 +209,21 @@ class image_blocks(dict):
         # monster_ct = re.findall(monsters[1], images[1])  # 0,1 0,0 1,0
         print('counted N monsters:', monster_ct)
         # print(monsters)
-        print('turbulence:', ''.join(images[1]).count('#'))
+        print('turbulence:', ''.join(images[0]).count('#'))
 
     def stitch_image(self, image_grid):
         # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
+        for image_row in image_grid:
+            print('')
+            for tile_i in range(0, len(self[image_grid[0][0]])):
+                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
+
         image = []
         for image_row in image_grid:
             for tile_i in range(1, len(self[image_grid[0][0]])-1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 image.append(row)
-                # print('ALD', row)
+                print('ALD', row)
 
         # Rotate the grid
         self['temp'] = image_grid
@@ -238,10 +243,10 @@ class image_blocks(dict):
                 rot_image.append(row)
                 # print(row)
 
-        for image_row in image_grid:
-            print('')
-            for tile_i in range(0, len(self[image_grid[0][0]])):
-                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
+        # for image_row in image_grid:
+        #     print('')
+        #     for tile_i in range(0, len(self[image_grid[0][0]])):
+        #         print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
 
         unwound = ''.join(image)
         rot_unwound = ''.join(rot_image)
