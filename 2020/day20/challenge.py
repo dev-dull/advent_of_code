@@ -225,6 +225,7 @@ class image_blocks(dict):
                 image.append(row)
                 # print('ALD', row)
 
+        # TODO: This is wrong. This rotates where the tiles are positioned, but not the tiles themselves.
         self['temp'] = image_grid
         self.tile_rot('temp', 1)  # Hijack my existing code
         image_grid = self.pop('temp')
