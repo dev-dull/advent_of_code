@@ -193,21 +193,23 @@ class image_blocks(dict):
         monster_middle = re.compile('#....##....##....###')
         monster_bottom = re.compile('.#..#..#..#..#..#...')
 
-        # monster_head   = re.compile('.#..................')
-        # monster_middle = re.compile('###....##....##....#')
-        # monster_bottom = re.compile('...#..#..#..#..#..#.')
+        #monster_head   = re.compile('.#..................')
+        #monster_middle = re.compile('###....##....##....#')
+        #monster_bottom = re.compile('...#..#..#..#..#..#.')
 
         monster_ct = 0
         for ri, line in enumerate(images[0]):
             # print('L', line)
-            if 0 < ri < len(images[0]):
+            if 0 < ri < len(images[0])-1:
                 for match in monster_middle.finditer(line):
-                    print('matched middle', ri)
+                    print('matched middle', ri, match.start(), match.end())
                     if monster_head.search(images[0][ri-1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
                         print('matched head', ri)
                         if monster_bottom.search(images[0][ri+1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
                             print('matched bottom', ri)
                             monster_ct += 1
+            else:
+                print('skipped line', ri)
 
         # The original plan was to loop through all the characters in monster_hunter and all the characters in the image
         # and match test `monster_c == ' ' or (ord(monster_c) ^ ord(image_c) == 0)` but using regex is faster
