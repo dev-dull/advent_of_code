@@ -197,6 +197,10 @@ class image_blocks(dict):
         #monster_middle = re.compile('###....##....##....#')
         #monster_bottom = re.compile('...#..#..#..#..#..#.')
 
+        # .............#.....#..#.#....#..#...##...#...#...#..###.......#...........#..#......#........#..
+        # .#...#...#....#....#...#....#..##...........#......#..##.......#..#....##...#..#..#.##.#..#.....
+        # .....#......#...#...#...#....##.....#.....#.....###....#...#......#..####....##....###.##.....#.
+
         monster_ct = 0
         for ri, line in enumerate(images[0]):
             # print('L', line)
@@ -205,8 +209,10 @@ class image_blocks(dict):
                     print('matched middle', ri, match.start(), match.end())
                     if monster_head.search(images[0][ri-1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
                         print('matched head', ri)
-                        if monster_bottom.search(images[0][ri+1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
-                            print('matched bottom', ri)
+                        # if monster_bottom.search(images[0][ri+1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
+                        if monster_bottom.search(images[0][ri + 1]):  # if ri-1 on this line, then checking for upsidedown monster.
+                            t = monster_bottom.search(images[0][ri + 1])
+                            print('matched bottom', ri, t.start(), t.end())
                             monster_ct += 1
             else:
                 print('skipped line', ri)
