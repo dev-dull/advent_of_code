@@ -3,6 +3,7 @@ import argparse
 from copy import copy
 from collections import defaultdict
 
+
 def get_input(test):
     fname = 'input.list'
     if test:
@@ -13,6 +14,7 @@ def get_input(test):
     fin.close()
 
     return lines
+
 
 class image_blocks(dict):
     def __init__(self, raw_image_data):
@@ -28,13 +30,9 @@ class image_blocks(dict):
             image_lines = image_data.splitlines()
             tile_name = int(image_lines[0].split()[-1][:-1])
             self[tile_name] = [list(il) for il in image_lines[1:]]
-
-            _sides = []
-            img_height = len(self[tile_name])
-
             self.refresh_sides(tile_name)
 
-        for tile_name,_sides in self.sides.items():
+        for tile_name, _sides in self.sides.items():
             other_tile_sides = []
             for other_name,other_sides in self.sides.items():
                 if tile_name != other_name:
@@ -43,12 +41,10 @@ class image_blocks(dict):
             for side in _sides:
                 if side in other_tile_sides:
                     self.matching_sides_ct[tile_name] += 1
-                    side_index = other_tile_sides.index(side)
                 else:
                     side.reverse()
                     if side in other_tile_sides:
                         self.matching_sides_ct[tile_name] += 1
-                        side_index = other_tile_sides.index(side)
                     side.reverse()  # flip it back for later.
 
     # Update the cache that contains just the tile sides
@@ -57,7 +53,6 @@ class image_blocks(dict):
         _sides = []
         _sides.append(self[tile_name][0])  # Top
         _sides.append(self[tile_name][-1])  # Bottom
-        # _sides.append([self[tile_name][n][0] for n in range(row_ct-1, -1, -1)])  # count down so side is in expected order
         _sides.append([self[tile_name][n][0] for n in range(0, row_ct)])  # This causes the left side to be backwards, but for how sides are compared, this ends up giving the expected results.
         _sides.append([self[tile_name][n][-1] for n in range(0, row_ct)])  # Right
         self.sides[tile_name] = _sides
@@ -129,7 +124,6 @@ class image_blocks(dict):
         image_grid = []
         left_sides = []
         find_my_bottom = top_left_tile_name
-        orientation = -1
         while find_my_bottom:
             # it is likely on the sweedish.
             previous_bottom = self.sides[find_my_bottom][self.BOTTOM]
@@ -147,7 +141,6 @@ class image_blocks(dict):
                 self.tile_hflip(find_my_bottom)
 
         # FIND all the tiles to the right of the left-edge tiles
-        orientation = -1
         for ri, ls in enumerate(left_sides):
             image_grid.append([])
             find_my_right = ls
@@ -167,81 +160,48 @@ class image_blocks(dict):
 
                 # TODO: it should be possible to determine if we need to hflip before any other rotations
                 if find_my_right and self.sides[find_my_right][self.LEFT] == previous_right[-1::-1]:
-                    # print('needed hflip+rotate:', find_my_right)
                     self.tile_hflip(find_my_right)
                     self.tile_rot(find_my_right, 2)
 
-        for row in image_grid:
-            print('r', row)
-
         images = self.stitch_image(image_grid)
-        # TODO: Items in `monster` only match an 'image' the size of the test data.
-        # monster_hunter = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
-
-
-        # monster_hunter = list('#    ##    ##    ###'.replace(' ', '.'))
-        # retnuh_retsnom = copy(monster_hunter)
-        # retnuh_retsnom.reverse()
-        # monsters = [''.join(monster_hunter), ''.join(retnuh_retsnom)]
-
-        # monster combos:
-        #  forward, images[0]: 14
-        #  forward, images[1]:  0
-        #  reverse, images[1]:  0
-        #  reverse, images[0]:  0
-        monster_head   = re.compile('..................#.')
-        monster_middle = re.compile('#....##....##....###')
-        monster_bottom = re.compile('.#..#..#..#..#..#...')
-
-        #monster_head   = re.compile('.#..................')
-        #monster_middle = re.compile('###....##....##....#')
-        #monster_bottom = re.compile('...#..#..#..#..#..#.')
-
-        # .............#.....#..#.#....#..#...##...#...#...#..###.......#...........#..#......#........#..
-        # .#...#...#....#....#...#....#..##...........#......#..##.......#..#....##...#..#..#.##.#..#.....
-        # .....#......#...#...#...#....##.....#.....#.....###....#...#......#..####....##....###.##.....#.
-
+        monster_shape = list('                  # #    ##    ##    ### #  #  #  #  #  #   '.replace(' ', '.'))
+        monster_hunters = [re.compile(''.join(monster_shape))]
+        monster_shape.reverse()
+        monster_hunters.append(re.compile(''.join(monster_shape)))
         monster_ct = 0
-        for ri, line in enumerate(images[0]):
-            # print('L', line)
-            if 0 < ri < len(images[0])-1:
-                for match in monster_middle.finditer(line):
-                    print('matched middle', ri, match.start(), match.end())
-                    if monster_head.search(images[0][ri-1][match.start():match.end()]):  # if ri+1 on this line, then checking for upsidedown monster.
-                        print('matched head', ri)
-                        # if monster_bottom.search(images[0][ri+1][match.start():match.end()]):  # if ri-1 on this line, then checking for upsidedown monster.
-                        if monster_bottom.search(images[0][ri + 1]):  # if ri-1 on this line, then checking for upsidedown monster.
-                            t = monster_bottom.search(images[0][ri + 1])
-                            print('matched bottom', ri, t.start(), t.end())
+        for monster_hunter in monster_hunters:
+            for image in images:
+                for ri, row in enumerate(image):
+                    for ci, col in enumerate(row):
+                        if monster_hunter.match(self._unroll_image_section(image, ri, ci)):
                             monster_ct += 1
-            else:
-                print('skipped line', ri)
 
-        # The original plan was to loop through all the characters in monster_hunter and all the characters in the image
-        # and match test `monster_c == ' ' or (ord(monster_c) ^ ord(image_c) == 0)` but using regex is faster
-        # monster_ct = re.findall(monsters[1], images[1])  # 0,1 0,0 1,0
+        turbulence = ''.join(images[0]).count('#')
+        monster_ripple = ''.join(monster_shape).count('#')
         print('counted N monsters:', monster_ct)
-        # print(monsters)
-        print('turbulence:', ''.join(images[0]).count('#'))
-        print('can I math?', '%s - %s * %s = %s'%(''.join(images[0]).count('#'), 15, monster_ct, ''.join(images[0]).count('#')-15*monster_ct))
+        print('turbulence:', turbulence)
+        print('can I math?', '%s - %s * %s = %s' % (turbulence, monster_ripple, monster_ct, turbulence-monster_ripple*monster_ct))
 
-    def stitch_image(self, image_grid):
-        # My image is 96 rows (correct) by 84 cols (incorrect) suggesting that my [1:-2 is in the wrong place]
-        for image_row in image_grid:
-            print('')
-            for tile_i in range(0, len(self[image_grid[0][0]])):
-                print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
+    def _unroll_image_section(self, image, row_index, col_index, unroll_size=(3, 20)):
+        unrolled = ''
+        for row in image[row_index:row_index+unroll_size[0]]:
+            unrolled += row[col_index:col_index+unroll_size[1]]
+        return unrolled
 
+    def _stich_image(self, image_grid):
         image = []
         for image_row in image_grid:
-            for tile_i in range(1, len(self[image_grid[0][0]])-1):
+            for tile_i in range(1, len(self[image_grid[0][0]]) - 1):
                 row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
                 image.append(row)
-                print('ALD', row)
+        return image
 
-        # Rotate the grid
+    def stitch_image(self, image_grid):
+        image = self._stich_image(image_grid)
+
+        # Rotate the grid by hijacking existing code
         self['temp'] = image_grid
-        self.tile_rot('temp', 1)  # Hijack my existing code
+        self.tile_rot('temp', 1)
         image_grid = self.pop('temp')
 
         # Rotate the individual tiles so everything lines up as expected
@@ -250,30 +210,9 @@ class image_blocks(dict):
                 self.tile_rot(tile_name, 1)
 
         # Build the rotated image and hope there isn't some pass-by-ref nonsense going with how `image` was built.
-        rot_image = []
-        for image_row in image_grid:
-            for tile_i in range(1, len(self[image_grid[0][0]])-1):
-                row = ''.join([''.join(self[tile_id][tile_i][1:-1]) for tile_id in image_row])
-                rot_image.append(row)
-                # print(row)
+        rot_image = self._stich_image(image_grid)
 
-        # for image_row in image_grid:
-        #     print('')
-        #     for tile_i in range(0, len(self[image_grid[0][0]])):
-        #         print(' '.join([''.join(self[tile_id][tile_i]) for tile_id in image_row]))
-
-        unwound = ''.join(image)
-        rot_unwound = ''.join(rot_image)
-        # print(len(unwound), len(rot_unwound))
-        # for row in image:
-        #     print('return', row)
-        # print('WTF', rot_image)
         return image, rot_image
-        # return unwound, rot_unwound
-        # print(unwound)
-        # for monster in monsters:
-        #     # TODO: loop through characters and True if space or # in monster matches # in image
-        #     print(monster)
 
 
 def part2(input):
@@ -282,7 +221,7 @@ def part2(input):
 
 def part1(input):
     result = 1
-    for tile_id,matching_sides_ct in input.matching_sides_ct.items():
+    for tile_id, matching_sides_ct in input.matching_sides_ct.items():
         if matching_sides_ct == 2:
             result *= tile_id
     print(result)
