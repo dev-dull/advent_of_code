@@ -7,16 +7,11 @@ def get_input(test):
         fname = 'testdata'
         print('USING TESTING DATA')
     fin = open(fname, 'r')
-    lines = fin.read().splitlines()
+    elfscals = fin.read().split('\n\n')
+    retval = {}
+    for i,elfcals in enumerate(elfscals):
+        retval[i] = [int(c) for c in elfcals.strip().splitlines()]
     fin.close()
-
-    retval = defaultdict(list)
-    elfi = 0
-    for line in lines:
-        if line:
-            retval[elfi].append(int(line))
-        else:
-            elfi += 1
 
     return retval
 
