@@ -27,7 +27,7 @@ def part1(input):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Advent of code 2020 solutions by Alastair')
+    parser = argparse.ArgumentParser(description='Advent of code 2022 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     input = get_input(args.test)
