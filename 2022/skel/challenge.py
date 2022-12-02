@@ -1,21 +1,16 @@
 import argparse
 
+
 def get_input(test):
     fname = 'input.list'
     if test:
         fname = 'testdata'
         print('USING TESTING DATA')
-    fin = open(fname, 'r')
-    lines = fin.read().splitlines()
-    fin.close()
 
-    while '' in lines:
-        lines.remove('')
+    with open(fname, 'r') as fin:
+        lines = fin.read().splitlines()
 
-    retval = []
-    for line in lines:
-        retval.append(list(line))
-    return retval
+    return lines
 
 
 def part2(input):
