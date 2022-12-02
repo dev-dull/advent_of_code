@@ -65,8 +65,8 @@ class rps_strategy_p1(object):
             return 6 + base_score
         elif self._WIN_LOSE_MAP[self._OPTIONS_MAP[base_score]][1] == self._OPTIONS_MAP[rival_choice]:
             return base_score
-        else:
-            return 3 + base_score
+
+        return 3 + base_score
 
 
 class rps_strategy_p2(rps_strategy_p1):
