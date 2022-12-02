@@ -16,13 +16,7 @@ def get_input(test):
     lines = fin.read().splitlines()
     fin.close()
 
-    while '' in lines:
-        lines.remove('')
-
-    retval = []
-    for line in lines:
-        retval.append(line)
-    return retval
+    return lines
 
 
 def part2(input):
@@ -76,9 +70,11 @@ class rps_strategy_p1(object):
 
 
 class rps_strategy_p2(rps_strategy_p1):
+    # My efforts in part 1 to make part 2 easier backfired a little, and now this solution is WILDLY over-engineered.
     def __init__(self):
         super().__init__()
 
+        # Reverse the _OPTIONS_MAP from the p1 object so I can find the value to pass to score_round()
         self._SCORE_MAP = {}
         for k, v in self._OPTIONS_MAP.items():
             if isinstance(k, int):
