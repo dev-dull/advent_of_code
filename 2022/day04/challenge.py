@@ -18,7 +18,20 @@ def get_input(test):
 
 
 def part2(input):
-    pass
+    teams = CleanTeams()
+    for team in input:
+        teams.add_team(team)
+
+    teams.sort_teams()
+
+    ct = 0
+    for raw, team in teams.items():
+        # because my results are sorted, I can get away with just one compare
+        if team[0][1] >= team[1][0]:
+            ct += 1
+            print(raw)
+
+    print(ct)
 
 
 def part1(input):
@@ -58,8 +71,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     input = get_input(args.test)
-    part1(input)
-    #part2(input)
+    # part1(input)
+    part2(input)
 
 
 if __name__ == '__main__':
