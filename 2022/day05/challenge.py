@@ -67,6 +67,7 @@ class SupplyStack(object):
 class SupplyStack9001(SupplyStack):
     # Now with leather seats and A/C!!!
     def do_stack_move(self, num_to_move, from_stack, to_stack):
+        # I almost did part 1 this way, with a `.reverse()` on the slice
         ni = num_to_move * -1
         self.columns[to_stack] += self.columns[from_stack][ni:]
         self.columns[from_stack] = self.columns[from_stack][0:ni]
