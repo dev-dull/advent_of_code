@@ -14,8 +14,15 @@ def get_input(test):
     return parts[0].splitlines(),parts[1].splitlines()
 
 
-def part2(input):
-    pass
+def part2(*input):
+    supply_stack = SupplyStack9001(input[0])
+
+    for step in input[1]:
+        step_parts = step.split()
+        # Indexing into a split string to get move info is gross, but I'm not thinking of a better alternative atm.
+        supply_stack.do_stack_move(*[int(step_parts[1]), step_parts[3], step_parts[5]])
+
+    supply_stack.print_top_of_stack()
 
 
 def part1(*input):
@@ -26,10 +33,7 @@ def part1(*input):
         # Indexing into a split string to get move info is gross, but I'm not thinking of a better alternative atm.
         supply_stack.do_stack_move(*[int(step_parts[1]), step_parts[3], step_parts[5]])
 
-    top_of_stack = ''
-    for k, v in supply_stack.columns.items():
-        top_of_stack += v[-1]
-    print(top_of_stack)
+    supply_stack.print_top_of_stack()
 
 
 class SupplyStack(object):
@@ -53,14 +57,28 @@ class SupplyStack(object):
             c = self.columns[from_stack].pop()
             self.columns[to_stack].append(c)
 
+    def print_top_of_stack(self):
+        top_of_stack = ''
+        for k, v in self.columns.items():
+            top_of_stack += v[-1]
+        print(top_of_stack)
+
+
+class SupplyStack9001(SupplyStack):
+    # Now with leather seats and A/C!!!
+    def do_stack_move(self, num_to_move, from_stack, to_stack):
+        ni = num_to_move * -1
+        self.columns[to_stack] += self.columns[from_stack][ni:]
+        self.columns[from_stack] = self.columns[from_stack][0:ni]
+
 
 def main():
     parser = argparse.ArgumentParser(description='Advent of code 2022 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     input = get_input(args.test)
-    part1(*input)
-    #part2(input)
+    # part1(*input)
+    part2(*input)
 
 
 if __name__ == '__main__':
