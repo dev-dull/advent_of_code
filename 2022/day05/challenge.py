@@ -42,6 +42,7 @@ class SupplyStack(object):
         column_positions = []
         self.columns = {}
         for pos, col_num in enumerate(stack[0]):
+            # BUG: This'll break for > 9 columns
             if col_num.isnumeric():
                 column_positions.append((pos, col_num))
                 self.columns[col_num] = []
