@@ -13,11 +13,11 @@ def get_input(test):
     return lines
 
 
-def part2(input):
+def part2(data):
     pass
 
 
-def part1(input):
+def part1(data):
     pass
 
 
@@ -25,9 +25,9 @@ def main():
     parser = argparse.ArgumentParser(description='Advent of code 2022 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
-    input = get_input(args.test)
-    #part1(input)
-    #part2(input)
+    data = get_input(args.test)
+    #part1(data)
+    #part2(data)
 
 
 if __name__ == '__main__':
