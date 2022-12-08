@@ -56,6 +56,7 @@ def find_left(data):
 
 
 def rot90(data, turn_ct=1):
+    # numpy.rot90() changes my type from InvisibleTree to numpy.int64 and I don't know how to tell numpy to knock it off
     # Copypasta from AoC 2020 day 20. Don't ask me how this works.
     row_ct = len([t[0] for t in data])
     for _ in range(0, turn_ct):
