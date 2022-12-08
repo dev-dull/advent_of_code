@@ -14,31 +14,28 @@ def get_input(test):
 
 
 def part2(data):
-    elfs = ElegantLogicalFileSystem()
-    for command in data:
-        if command:  # Toss out blank lines from ingestion
-            elfs.run_cmd(command)
-
-    space_used = elfs.refresh_size_on_disk()
-    space_needed = 30000000 - (70000000 - space_used)
-    # print(space_used, space_needed)
+    elfs = ElegantLogicalFileSystem(data)
+    space_needed = 30000000 - (70000000 - elfs.size_on_disk)
     elfs.dirs_gte(space_needed)
 
 
 def part1(data):
-    elfs = ElegantLogicalFileSystem()
-    for command in data:
-        if command:  # Toss out blank lines from ingestion
-            elfs.run_cmd(command)
-
+    elfs = ElegantLogicalFileSystem(data)
     elfs.sum_dirs()
 
 
 class ElegantLogicalFileSystem(object):
     # ELFS header node
-    def __init__(self):
+    def __init__(self, commands):
         self.elfs = None
         self.cwd = None
+        self.size_on_disk = 0
+
+        for command in commands:
+            if command:
+                self.run_cmd(command)
+
+        self.size_on_disk = self.refresh_size_on_disk()
 
     def run_cmd(self, command_data):
         if command_data.startswith('cd'):
@@ -112,7 +109,7 @@ class _ELFS(dict):
 
         dirsum += sum([f[0] for f in self.files])
         if dirsum <= max_size:
-            print(parent_key, dirsum)
+            # print(parent_key, dirsum)
             diskuse.append(dirsum)
         return dirsum
 
