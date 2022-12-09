@@ -1,9 +1,13 @@
 import argparse
 from copy import copy
+from functools import reduce
 
 
 class InvisibleTree(int):
     visible = False
+    # Intially, I had score as a list, which made it pass-by-ref, which
+    # means that ALL InvisibleTree() pointed at the SAME list
+    score = 1
 
 
 def get_input(test):
@@ -26,10 +30,45 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    check_east(data)
+    data = rot90(data)
+    check_east(data)
+    data = rot90(data)
+    check_east(data)
+    data = rot90(data)
+    check_east(data)
+
+    best_score = 0
+    for row in data:
+        for tree in row:
+            if tree.score > best_score:
+                best_score = tree.score
+
+    print(best_score)
+
+
+def check_east(data):
+    row_len = len(data)
+    col_len = len(data[0])
+    # print("row", row_len)
+    # print("col", col_len)
+
+    for ri in range(1, row_len-1):
+        for ci in range(1, col_len-1):
+            tree_score = 0
+            for tree in data[ri][ci+1:]:
+                if tree < data[ri][ci]:
+                    tree_score += 1
+                else:
+                    tree_score += 1
+                    break
+            # data[ri][ci].scores.append(tree_score)
+            data[ri][ci].score *= tree_score
 
 
 def part1(data):
+    # I was trying to avoid loops that come into the 2d array from different directions, but
+    # that would've been easier and faster to write.
     find_left(data)
     data = rot90(data)
     find_left(data)
@@ -73,8 +112,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
