@@ -42,17 +42,17 @@ class RopeHT(object):
     def do_move(self, direction, move_count):
         move_count += 1  # update now for call to range() in move_by()
         if direction == 'U':
-            self.move_by(move_count, 1)
+            self._do_move(move_count, 1)
         elif direction == 'D':
-            self.move_by(move_count*-1, 1, step_by=-1)
+            self._do_move(move_count*-1, 1, step_by=-1)
         elif direction == 'L':
-            self.move_by(move_count*-1, 0, step_by=-1)
+            self._do_move(move_count*-1, 0, step_by=-1)
         elif direction == 'R':
-            self.move_by(move_count, 0)
+            self._do_move(move_count, 0)
         else:
             raise ValueError('wtf?')
 
-    def move_by(self, move, direction_i, step_by=1):
+    def _do_move(self, move, direction_i, step_by=1):
         for i in range(self.head_position[direction_i], self.head_position[direction_i]+move, step_by):
             previous = copy(self.head_position)
             self.head_position[direction_i] = i
