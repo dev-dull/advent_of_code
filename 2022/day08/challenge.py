@@ -50,8 +50,6 @@ def part2(data):
 def check_east(data):
     row_len = len(data)
     col_len = len(data[0])
-    # print("row", row_len)
-    # print("col", col_len)
 
     for ri in range(1, row_len-1):
         for ci in range(1, col_len-1):
@@ -62,7 +60,6 @@ def check_east(data):
                 else:
                     tree_score += 1
                     break
-            # data[ri][ci].scores.append(tree_score)
             data[ri][ci].score *= tree_score
 
 
