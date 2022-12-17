@@ -14,7 +14,8 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    picture = part1(data)
+    print(picture)
 
 
 def part1(data):
@@ -22,6 +23,7 @@ def part1(data):
     for d in data:
         picture(*d.split())
     print(picture[220])  # just in case they rudely give me input long enough to hit 260.
+    return picture
 
 
 class RGBPhotonGunCyclotron(object):
@@ -35,6 +37,8 @@ class RGBPhotonGunCyclotron(object):
             'addx': self.addx
         }
         self.intervals = {}
+        self.pixels = ['.']*(40*6)
+        # self.sprite_range = [self.value-1, self.value+1]
 
     def _cycle_intervals(self):
         c = 20
@@ -51,9 +55,13 @@ class RGBPhotonGunCyclotron(object):
             self.operations[args[0]](*args[1:])
 
     def __next__(self):
+        row_offset = (self._cycles_elapsed // 40) * 40
+        if self._cycles_elapsed in range((row_offset+self.value)-1, (row_offset+self.value)+2):
+            # The wording around what position to light was completely confusing. I had to stare at the examples a lot.
+            self.pixels[self._cycles_elapsed] = '#'
+
         self._cycles_elapsed += 1
         if self._cycles_elapsed == self.cycle_target:
-            # print(f'{self.cycle_target}*{self.value}={self.cycle_target*self.value}')
             self.intervals[self.cycle_target] = self.value
             self.cycle_target = next(self.cycle_interval)
 
@@ -64,12 +72,20 @@ class RGBPhotonGunCyclotron(object):
                 signals.append(k*v)
         return sum(signals)
 
+    def __str__(self):
+        previous = 0
+        parts = []
+        for end in range(40, 260, 40):
+            parts.append(''.join(self.pixels[previous:end]))
+            previous = end
+        return '\n'.join(parts)
+
     def noop(self):
         next(self)
 
     def addx(self, value):
-        self.noop()
-        self.noop()
+        next(self)
+        next(self)
         self.value += int(value)
 
 
@@ -78,8 +94,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
