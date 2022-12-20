@@ -20,7 +20,25 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    packets = []
+    for left, right in data:
+        packets.append(PacketOrderChecker._PacketPair(left))
+        packets.append(PacketOrderChecker._PacketPair(right))
+    packets.sort()
+
+    divider_packet_power = 1
+    for i, packet in enumerate(packets):
+        print(packet.value)
+        if isinstance(packet.value, list):
+            if len(packet.value) == 1:
+                if isinstance(packet.value[0], list):
+                    if len(packet.value[0]) == 1:
+                        if packet.value[0][0] in [2, 6]:
+                            divider_packet_power *= (i + 1)
+
+    print(divider_packet_power)
+
+
 
 
 def part1(data):
@@ -52,7 +70,6 @@ class PacketOrderChecker(object):
                 loop_max = min([len(self.value), len(other.value)])
                 for i in range(0, loop_max):
                     if PacketOrderChecker._PacketPair(other.value[i]) < PacketOrderChecker._PacketPair(self.value[i]):
-                        print(other.value[i], '<', self.value)
                         return False
                     elif PacketOrderChecker._PacketPair(self.value[i]) < PacketOrderChecker._PacketPair(other.value[i]):
                         return True
@@ -94,9 +111,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
