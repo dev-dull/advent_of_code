@@ -24,15 +24,23 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    cave = CavernP2(data)
+    print(cave)
+
+    counts = 0
+    while cave():
+        counts += 1
+
+    print(cave)
+    print(counts+1)
 
 
 def part1(data):
     cave = Cavern(data)
     print(cave.bottom_edge)
     print(cave, '\n')
-    counts = 0
 
+    counts = 0
     while cave():
         counts += 1
 
@@ -123,15 +131,27 @@ class Cavern(object):
         return retval
 
 
+class CavernP2(Cavern):
+    def __init__(self, ddd_scan_data):
+        super().__init__(ddd_scan_data)
+        floor_level = self.bottom_edge + 2
+        self.bottom_edge += 2
+        # I'm blindly throwing in enough floor to (hopefully) act as infinitely wide.
+        for floor_point in range(0, self.right_edge * 2):
+            self.cavern_model[(floor_point, self.bottom_edge)] = self.Rock()
+
+    def __call__(self, deep_hurting=(500, 0)):
+        super().__call__(deep_hurting=deep_hurting)
+        return deep_hurting not in self.cavern_model
+
 
 def main():
     parser = argparse.ArgumentParser(description='Advent of code 2022 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
