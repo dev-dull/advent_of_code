@@ -26,8 +26,24 @@ def get_input(test):
     return retval
 
 
-def part2(data):
-    pass
+def part2(data, test):
+    sensor_array = SensorArray(data)
+    print(str(sensor_array))
+
+    max_search_area = 20 if test else 4000000
+
+    # This worked for me, but also returns multiple results for the test data, so ymmv.
+    for position, sb_item in sensor_array.items():
+        outside_item_ri = sb_item.distance+1
+        outside_item_ci = 0
+        while outside_item_ri >= 0:
+            if max_search_area >= position[0]+outside_item_ci >= 0:
+                if max_search_area >= position[1] + outside_item_ri >= 0:
+                    if not sensor_array.check_position((position[0]+outside_item_ci, position[1]+outside_item_ri)):
+                        frequency = ((position[0] + outside_item_ci) * 4000000) + position[1] + outside_item_ri
+                        print((position[0] + outside_item_ci, position[1] + outside_item_ri), frequency)
+            outside_item_ri -= 1
+            outside_item_ci += 1
 
 
 def part1(data, test):
@@ -166,8 +182,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data, args.test)
-    #part2(data)
+    # part1(data, args.test)
+    part2(data, args.test)
 
 
 if __name__ == '__main__':
