@@ -35,10 +35,8 @@ def part2(data):
         insertions = defaultdict(list)
         for i, c in enumerate(line):
             for number_name in NUMBER_NAMES.keys():
-                try:
+                if number_name in line[i:]:
                     insertions[number_name].append(line[i:].index(number_name) + i)
-                except ValueError:
-                    continue
 
         fixed_line = list(line)
         for number_name, number_insertions in insertions.items():
