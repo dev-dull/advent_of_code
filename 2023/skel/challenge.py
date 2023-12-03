@@ -8,7 +8,7 @@ def get_input(test):
         print('USING TESTING DATA')
 
     with open(fname, 'r') as fin:
-        lines = fin.read().splitlines()
+        lines = fin.read().strip().splitlines()
 
     return lines
 
