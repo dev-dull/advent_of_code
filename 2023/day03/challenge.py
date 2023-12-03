@@ -45,9 +45,8 @@ def part2(schematic):
 
     ### Calculate the gear ratios to be summed
     gear_ratios = []
-    for location, gearset in gearsets.items():
-        if len(gearset) > 1:
-            gear_ratios.append(reduce(lambda a,b: a*b, gearset, 1))
+    for gearset in filter(lambda g: len(g)>1, gearsets.values()):
+        gear_ratios.append(reduce(lambda a,b: a*b, gearset, 1))
     print(sum(gear_ratios))
 
 
