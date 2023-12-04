@@ -33,6 +33,7 @@ def get_input(test):
     scratchcards.add_cards(lines)
     return scratchcards
 
+
 def count_wins(scratchcards, wins):
     new_wins = []
     for win in wins:
