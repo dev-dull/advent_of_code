@@ -1,4 +1,5 @@
 import argparse
+from copy import copy
 from functools import reduce
 
 
@@ -32,10 +33,19 @@ def get_input(test):
     scratchcards.add_cards(lines)
     return scratchcards
 
+def count_wins(scratchcards, wins):
+    new_wins = []
+    for win in wins:
+        for wi, _ in enumerate(scratchcards[win]['winning_picks']):
+            new_wins.append(win+wi+1)
+    if new_wins:
+        return len(wins)+count_wins(scratchcards, new_wins)
+    return len(wins)+len(new_wins)
 
-def part2(data):
-    pass
-
+def part2(scratchcards):
+    # low: 13114316
+    wins = count_wins(scratchcards, scratchcards.keys())
+    print(wins)
 
 def part1(scratchcards):
     total_score = 0
@@ -49,8 +59,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
