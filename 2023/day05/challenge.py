@@ -39,8 +39,18 @@ def get_input(test):
     return seeds, almanac_info
 
 
-def part2(data):
-    pass
+def part2(seeds, almanac_info):
+    start = 0
+    seed_pairs = []
+    while seeds[start:]:
+        seed_pairs.append((seeds[start:][0], seeds[start:][1]))
+        start += 2
+    # print(seed_pairs)
+    locations = []
+    for seed_pair in seed_pairs:
+        seed_span = range(seed_pair[0], seed_pair[0]+seed_pair[1])
+        locations.append(part1(seed_span, almanac_info))
+    print(min(locations))
 
 
 def part1(seeds, almanac_info):
@@ -50,8 +60,8 @@ def part1(seeds, almanac_info):
         for mapping in almanac_info.values():
             seedling = mapping[seedling]
         locations.append(seedling)
-    print(min(locations))
-
+        locations = [min(locations)]
+    return min(locations)
 
 
 def main():
@@ -59,8 +69,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     seeds, almanac_info = get_input(args.test)
-    part1(seeds, almanac_info)
-    #part2(data)
+    # print(part1(seeds, almanac_info))
+    part2(seeds, almanac_info)
 
 
 if __name__ == '__main__':
