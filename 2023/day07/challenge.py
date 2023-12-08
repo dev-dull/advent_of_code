@@ -1,6 +1,7 @@
 import argparse
 
 
+# For part 1
 class CamelCardHands(list):
     class C(object):
         # C is for constants (and that's good enough for me)
@@ -30,15 +31,15 @@ class CamelCardHands(list):
         super().append(hand_data)
 
     @staticmethod
-    def five_of_a_kind(self, hand):
-        return hand[0]*5 == hand
-
-    @staticmethod
     def _counting_cards(hand, count, count_counts):
         counts = []
         for c in set(hand):
             counts.append(hand.count(c))
         return counts.count(count) == count_counts
+
+    @staticmethod
+    def five_of_a_kind(self, hand):
+        return hand[0]*5 == hand
 
     @staticmethod
     def four_of_a_kind(self, hand):
@@ -61,6 +62,7 @@ class CamelCardHands(list):
         return self._counting_cards(hand, 2, 1)
 
 
+# For part 2
 class WildCamelCardHands(CamelCardHands):
     class C(object):
         # C is for constants (and that's good enough for me)
@@ -69,22 +71,22 @@ class WildCamelCardHands(CamelCardHands):
             CARD_VALUE_LOOKUP[c] = (i + 1)
 
     @staticmethod
-    def five_of_a_kind(self, hand):
-        test_hand = self._wildcard_replace(self, hand, 2, 5)
-        return test_hand[0]*5 == test_hand
-
-    @staticmethod
-    def _wildcard_replace(self, hand, unique_card_count, combied_card_count):
+    def _wildcard_replace(self, hand, unique_card_count, combined_card_count):
         test_hand = hand
         hand_set = list(set(hand))
         wild_j = 'J'
         if 'J' in hand and len(hand_set) == unique_card_count:
             hand_set.remove('J')
             for c in hand_set:
-                if test_hand.count(c) + test_hand.count('J') == combied_card_count:
+                if test_hand.count(c) + test_hand.count('J') == combined_card_count:
                     if self.C.CARD_VALUE_LOOKUP[c] > self.C.CARD_VALUE_LOOKUP[wild_j]:
                         wild_j = c
         return hand if wild_j == 'J' else test_hand.replace('J', wild_j)
+
+    @staticmethod
+    def five_of_a_kind(self, hand):
+        test_hand = self._wildcard_replace(self, hand, 2, 5)
+        return super().five_of_a_kind(self, test_hand)
 
     @staticmethod
     def four_of_a_kind(self, hand):
@@ -94,14 +96,14 @@ class WildCamelCardHands(CamelCardHands):
         # QJJJY
         # QJJJJ
         test_hand = self._wildcard_replace(self, hand, 3, 4)
-        return self._counting_cards(test_hand, 4, 1)
+        return super().four_of_a_kind(self, test_hand)
 
     @staticmethod
     def full_house(self, hand):
         # 11222
         # 11J22
         test_hand = self._wildcard_replace(self, hand, 3, 3)
-        return self._counting_cards(test_hand, 3, 1) and self._counting_cards(test_hand, 2, 1)
+        return super().full_house(self, test_hand)
 
     @staticmethod
     def three_of_a_kind(self, hand):
@@ -110,7 +112,7 @@ class WildCamelCardHands(CamelCardHands):
         # 12JJ3
         # 12JJJ
         test_hand = self._wildcard_replace(self, hand, 4, 3)
-        return self._counting_cards(test_hand, 3, 1)
+        return super().three_of_a_kind(self, test_hand)
 
     @staticmethod
     def two_pair(self, hand):
@@ -118,14 +120,14 @@ class WildCamelCardHands(CamelCardHands):
         # 11J23
         # if we had two instances of 'J' then we'd want to make it 3 of a kind
         test_hand = self._wildcard_replace(self, hand, 4, 4)
-        return self._counting_cards(test_hand, 2, 2)
+        return super().two_pair(self, test_hand)
 
     @staticmethod
     def one_pair(self, hand):
         # 11345
         # 1J345
         test_hand = self._wildcard_replace(self, hand, 5, 2)
-        return self._counting_cards(test_hand, 2, 1)
+        return super().one_pair(self, test_hand)
 
 
 def get_input(test):
@@ -158,6 +160,7 @@ def part2(data):
     result = sum(wager_score)
     print(result)
 
+
 def part1(data):
     camel_card_hands = CamelCardHands()
     for d in data:
@@ -172,7 +175,6 @@ def part1(data):
 
     result = sum(wager_score)
     print(result)
-
 
 
 def main():
