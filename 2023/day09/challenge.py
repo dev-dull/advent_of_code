@@ -18,7 +18,11 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    patterns_sum = 0
+    for pattern in data:
+        pattern.reverse()
+        patterns_sum += pattern[-1] + pattern_parser(pattern)
+    print(patterns_sum)
 
 
 def pattern_parser(pattern):
@@ -40,8 +44,8 @@ def main():
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
