@@ -18,12 +18,10 @@ def get_input(test):
 
 
 def part2(data):
-    patterns_sum = 0
     for pattern in data:
         pattern.reverse()
-        patterns_sum += pattern[-1] + pattern_parser(pattern)
-    print(patterns_sum)
 
+    part1(data)
 
 def pattern_parser(pattern):
     next_pattern = [pattern[i+1]-p for i,p in enumerate(pattern[:-1])]
