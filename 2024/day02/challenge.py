@@ -1,4 +1,6 @@
 import argparse
+from copy import copy
+
 
 class Building(list):
     class _Floor(list):
@@ -41,6 +43,18 @@ class Building(list):
             self.append(self._Floor(floor))
 
 
+class DampenedBuilding(Building):
+    class _Floor(Building._Floor):
+        @property
+        def safe(self):
+            for i in range(len(self)):
+                dampened_floor = copy(self)
+                dampened_floor.pop(i)
+                if super(DampenedBuilding._Floor, dampened_floor).safe:
+                    return True
+            return False
+
+
 def get_input(test):
     fname = 'input.list'
     if test:
@@ -54,12 +68,20 @@ def get_input(test):
 
 
 def part2(data):
-    pass
+    building = DampenedBuilding(data)
+    safety_count = 0
+    for floor in building:
+        if floor.safe:
+            safety = 'Safe'
+            safety_count += 1
+        else:
+            safety = 'Unsafe'
+        print(floor, safety)
+    print(safety_count)
 
 
 def part1(data):
     building = Building(data)
-    safety = ''
     safety_count = 0
     for floor in building:
         if floor.safe:
@@ -72,12 +94,12 @@ def part1(data):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Advent of code 2023 solutions by Alastair')
+    parser = argparse.ArgumentParser(description='Advent of code 2024 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
     args = parser.parse_args()
     data = get_input(args.test)
-    part1(data)
-    #part2(data)
+    # part1(data)
+    part2(data)
 
 
 if __name__ == '__main__':
