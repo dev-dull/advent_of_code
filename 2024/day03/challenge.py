@@ -49,10 +49,14 @@ def part1(data):
 def main():
     parser = argparse.ArgumentParser(description='Advent of code 2024 solutions by Alastair')
     parser.add_argument('-t', '--test', dest='test', action='store_true', default=False, help='Use the file testdata instead of input.list')
+    parser.add_argument('-2', '--part2', dest='part2', action='store_true', default=False, help='Run part 2 instead of part 1')
     args = parser.parse_args()
     data = get_input(args.test)
-    # part1(data)
-    part2(data)
+
+    if args.part2:
+        part2(data)
+    else:
+        part1(data)
 
 
 if __name__ == '__main__':
