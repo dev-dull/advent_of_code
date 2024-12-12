@@ -31,6 +31,9 @@ def part2(data):
 
         if do_mult and operation.startswith('mul('):
             calculations.append(operation)
+
+    # here's a bad plan that'll work
+    # like, seriously, never, EVER blindly eval() strings you don't trust
     print(sum([eval(c) for c in calculations]))
 
 
@@ -41,7 +44,6 @@ def part1(data):
     # like, seriously, never, EVER blindly eval() strings you don't trust
     results = [eval(match.group()) for match in mul_exp.finditer(data)]
     print(sum(results))
-
 
 
 def main():
