@@ -28,10 +28,8 @@ def main():
     args = parser.parse_args()
     data = get_input(args.test)
 
-    if args.part2:
-        part2(data)
-    else:
-        part1(data)
+    f = part2 if args.part2 else part1
+    f(data)
 
 
 if __name__ == '__main__':
