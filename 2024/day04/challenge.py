@@ -106,24 +106,24 @@ class XMasSearch(WordSearch):
         self._find_all_starts()
 
     def search(self):
+        shift_by = self._WORD_LENGTH - 1
         for r, c in self.start_locations:
             if self._search_down_right(r, c):
-                if self._search_up_right(r+2, c) or self._search_down_left(r, c+2):
+                if self._search_up_right(r+shift_by, c) or self._search_down_left(r, c+shift_by):
                     self.xmas_locations.append((r, c))
 
             if self._search_up_right(r, c):
-                if self._search_down_right(r-2, c) or self._search_up_left(r, c+2):
+                if self._search_down_right(r-shift_by, c) or self._search_up_left(r, c+shift_by):
                     self.xmas_locations.append((r, c))
 
             if self._search_up_left(r, c):
-                if self._search_up_right(r, c-2) or self._search_down_left(r-2, c):
+                if self._search_up_right(r, c-shift_by) or self._search_down_left(r-shift_by, c):
                     self.xmas_locations.append((r, c))
 
             if self._search_down_left(r, c):
-                if self._search_down_right(r, c-2) or self._search_up_left(r+2, c):
+                if self._search_down_right(r, c-shift_by) or self._search_up_left(r+shift_by, c):
                     self.xmas_locations.append((r, c))
         return self.xmas_locations
-
 
 
 def get_input(test):
