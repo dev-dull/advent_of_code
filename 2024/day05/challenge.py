@@ -27,17 +27,31 @@ class PrintRules(dict):
         else:
             self[k] = [v]
 
-    def __eq__(self, pages):
+    def find_ordering_issue(self, pages):
         for i, page in enumerate(pages):
             if page in self:
                 for rule in self[page]:
                     if rule in pages[:i]:
-                        return False
-        return True
+                        return i, rule  # The number that is out of order
+        return -1, -1
+
+    def __eq__(self, pages):
+        return self.find_ordering_issue(pages) == (-1, -1)
 
 
 def part2(rules, pages):
-    pass
+    pretty_mid = []
+    print_rules = PrintRules(rules)
+    for page in pages.splitlines():
+        print_list = page.split(',')
+        i, n = print_rules.find_ordering_issue(print_list)
+        if (i, n) != (-1, -1):
+            while (i, n) != (-1, -1):
+                print_list.remove(n)
+                print_list = print_list[:i] + [n] + print_list[i:]
+                i, n = print_rules.find_ordering_issue(print_list)
+            pretty_mid.append(print_list[int(len(print_list)/2)])
+    print(sum([int(n) for n in pretty_mid]))
 
 
 def part1(rules, pages):
