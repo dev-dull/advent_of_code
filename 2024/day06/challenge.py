@@ -1,6 +1,7 @@
 import os
 import argparse
 from time import sleep
+from copy import deepcopy
 from itertools import cycle
 
 
@@ -37,14 +38,19 @@ class LabMap(list):
     def _check_position(self, r, c):
         return -1 < r < self.map_size[0] and -1 < c < self.map_size[1]
 
+    def check_for_turn(self, r, c):
+        return self[r][c] == '#'
+
     def __call__(self):
         next_r = self.guard_position[0]+self.move_direction[0]
         next_c = self.guard_position[1]+self.move_direction[1]
+        if (next_r, next_c) == (7, 32) and self[7][33]=='O':
+            print('', end='')
         if not self._check_position(next_r, next_c):
             return False
 
         # looking at the input, I think the guard could spin in a 360 before moving again
-        while self[next_r][next_c] == '#':
+        while self.check_for_turn(next_r, next_c):
             self.move_direction = next(self._next_direction)
             next_r = self.guard_position[0]+self.move_direction[0]
             next_c = self.guard_position[1]+self.move_direction[1]
@@ -62,9 +68,59 @@ class LabMap(list):
         return '\n'.join(lines)
 
 
+class LabMapLoop(LabMap):
+    class PatrolLoopException(Exception):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._turn_counter = {}
+
+    def check_for_turn(self, r, c):
+        if self[r][c] in '#O':
+            if (r, c) not in self._turn_counter:
+                self._turn_counter[(r, c)] = [0, None]
+            elif self._turn_counter[(r, c)][0] == 2 and self._turn_counter[(r, c)][1] == self.move_direction:
+                raise self.PatrolLoopException('Loop detected')
+            self._turn_counter[(r, c)][0] += 1
+            self._turn_counter[(r, c)][1] = self.move_direction
+        return self[r][c] in '#O'
+
+    def add_obstruction(self, r, c):
+        if self[r][c] == '#' or self.guard_position == (r, c):
+            return False
+        self[r][c] = 'O'
+        return True
+
 
 def part2(data):
-    pass
+    # Putting an O at 7,33 redirected the guard into a loop created of '#' which
+    # broke my old loop detection that only tracked loops against added blocker 'O'
+    try:
+        animated = False
+        loop_positions = []
+        for ri in range(len(data)):
+            for ci in range(len(data[0])):
+                map = LabMapLoop(deepcopy(data))  # I was surprised that 'deepcopy()' was required here
+                if map.add_obstruction(ri, ci):
+                    try:
+                        if (ri, ci) == (7, 33):
+                            print('', end='')
+                        while map():
+                            if animated:
+                                os.system('clear')
+                                print(map)
+                                sleep(0.01)
+                    except LabMapLoop.PatrolLoopException:
+                        loop_positions.append((ri, ci))
+                if not animated:
+                    print(f'{map.guard_position[0]:03d},{map.guard_position[1]:03d} {ri:03d}, {ci:03d} = {int(((ri+1)/len(data))*100):03d}%', end='\033[0K\r')
+    except KeyboardInterrupt as e:
+        print(f'{map.guard_position[0]:03d},{map.guard_position[1]:03d} {ri:03d}, {ci:03d} = {int(((ri+1)/len(data))*100):03d}%', end='\n\033[0K\r')
+        print(map, '\n\n')
+        raise e
+    print('')
+    print(len(loop_positions))
 
 
 def part1(data):
