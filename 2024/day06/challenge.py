@@ -114,9 +114,9 @@ def part2(data):
                     except LabMapLoop.PatrolLoopException:
                         loop_positions.append((ri, ci))
                 if not animated:
-                    print(f'{map.guard_position[0]:03d},{map.guard_position[1]:03d} {ri:03d}, {ci:03d} = {int(((ri+1)/len(data))*100):03d}%', end='\033[0K\r')
+                    print(f'{map.guard_position[0]:>3d},{map.guard_position[1]:>3d} {ri:>3d}, {ci:>3d} = {int(((ri+1)/len(data))*100):>3d}%', end='\033[0K\r')
     except KeyboardInterrupt as e:
-        print(f'{map.guard_position[0]:03d},{map.guard_position[1]:03d} {ri:03d}, {ci:03d} = {int(((ri+1)/len(data))*100):03d}%', end='\n\033[0K\r')
+        print(f'{map.guard_position[0]:>3d},{map.guard_position[1]:>3d} {ri:>3d}, {ci:>3d} = {int(((ri+1)/len(data))*100):>3d}%', end='\n\033[0K\r')
         print(map, '\n\n')
         raise e
     print('')
