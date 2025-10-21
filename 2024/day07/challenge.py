@@ -61,8 +61,7 @@ def part1(raw_data):
 
 class _Part2(_Part1):
     def __init__(self, values, previous):
-        # There's a quirk with order of operations if you try to use super().__init__ and then add
-        # concat here, so just re-implementing for readability.
+        # Using super().__init__ will cause `next_add` and `next_multiply` to be of type `_Part1` not `_Part2`
         self.value = values[0]
         self.multiply = self.value * previous
         self.add = self.value + previous
