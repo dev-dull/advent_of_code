@@ -33,40 +33,45 @@ class _BridgeCalibrator(object):
         return value in self.modified_values
 
 
-class BridgeCalibrator(object):
-    def __init__(self, total, values, modifiers):
+class BridgeCalibrator1(object):
+    def __init__(self, total, values):
+        modifiers = [
+            lambda v, p: v * p,
+            lambda v, p: v + p,
+        ]
         self.total = total
         self._bc = _BridgeCalibrator(values[1:], values[0], modifiers)
 
     def __bool__(self):
         return self._bc == self.total
 
+class BridgeCalibrator2(BridgeCalibrator1):
+    def __init__(self, total, values):
+        modifiers = [
+            lambda v, p: v * p,
+            lambda v, p: v + p,
+            lambda v, p: int(f"{p}{v}"),
+        ]
+        self.total = total
+        self._bc = _BridgeCalibrator(values[1:], values[0], modifiers)
+
 
 def part2(raw_data):
-    modifiers = [
-        lambda v, p: v * p,
-        lambda v, p: v + p,
-        lambda v, p: int(f"{p}{v}"),
-    ]
     data = _make_data_p1(raw_data)
     x = 0
     for total, values in data:
-        p1 = BridgeCalibrator(total, values, modifiers)
-        if p1:
+        bc = BridgeCalibrator2(total, values)
+        if bc:
             x += total
     print(x)
 
 
 def part1(raw_data):
-    modifiers = [
-        lambda v, p: v * p,
-        lambda v, p: v + p,
-    ]
     data = _make_data_p1(raw_data)
     x = 0
     for total, values in data:
-        p1 = BridgeCalibrator(total, values, modifiers)
-        if p1:
+        bc = BridgeCalibrator1(total, values)
+        if bc:
             x += total
     print(x)
 
