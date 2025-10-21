@@ -13,33 +13,6 @@ def get_input(test):
     return lines
 
 
-class _Part1(object):
-    def __init__(self, values, previous):
-        self.value = values[0]
-        self.multiply = self.value * previous
-        self.add = self.value + previous
-
-        self.next_add = None
-        self.next_multiply = None
-        if values[1:]:
-            self.next_add = _Part1(values[1:], self.add)
-            self.next_multiply = _Part1(values[1:], self.multiply)
-
-    def __eq__(self, value):
-        if self.next_add:
-            return self.next_add == value or self.next_multiply == value
-        return value in [self.add, self.multiply]
-
-
-class Part1(object):
-    def __init__(self, total, values):
-        self.total = total
-        self.values_tree = _Part1(values[1:], values[0])
-
-    def __bool__(self):
-        return self.values_tree == self.total
-
-
 def _make_data_p1(data):
     clean_data = []
     for d in data:
@@ -48,51 +21,52 @@ def _make_data_p1(data):
         clean_data.append((int(total), [int(v) for v in values]))
     return clean_data
 
+class _BridgeCalibrator(object):
+    def __init__(self, values, previous, modifiers):
+        self.value = values[0]
+        self.modified_values = [m(self.value, previous) for m in modifiers]
+        self.next_values = [_BridgeCalibrator(values[1:], mv, modifiers) for mv in self.modified_values] if values[1:] else [None]
 
-def part1(raw_data):
-    x = 0
+    def __eq__(self, value):
+        if self.next_values[0]:
+            return any([n == value for n in self.next_values])
+        return value in self.modified_values
+
+
+class BridgeCalibrator(object):
+    def __init__(self, total, values, modifiers):
+        self.total = total
+        self._bc = _BridgeCalibrator(values[1:], values[0], modifiers)
+
+    def __bool__(self):
+        return self._bc == self.total
+
+
+def part2(raw_data):
+    modifiers = [
+        lambda v, p: v * p,
+        lambda v, p: v + p,
+        lambda v, p: int(f"{p}{v}"),
+    ]
     data = _make_data_p1(raw_data)
+    x = 0
     for total, values in data:
-        p1 = Part1(total, values)
+        p1 = BridgeCalibrator(total, values, modifiers)
         if p1:
             x += total
     print(x)
 
 
-class _Part2(_Part1):
-    def __init__(self, values, previous):
-        # Using super().__init__ will cause `next_add` and `next_multiply` to be of type `_Part1` not `_Part2`
-        self.value = values[0]
-        self.multiply = self.value * previous
-        self.add = self.value + previous
-        self.concat = int(f"{previous}{self.value}")
-
-        self.next_add = None
-        self.next_multiply = None
-        self.next_concat = None
-        if values[1:]:
-            self.next_add = _Part2(values[1:], self.add)
-            self.next_multiply = _Part2(values[1:], self.multiply)
-            self.next_concat = _Part2(values[1:], self.concat)
-
-    def __eq__(self, value):
-        if self.next_add:
-            return super().__eq__(value) or self.next_concat == value
-        return value in [self.add, self.multiply, self.concat]
-
-
-class Part2(Part1):
-    def __init__(self, total, values):
-        self.total = total
-        self.values_tree = _Part2(values[1:], values[0])
-
-
-def part2(raw_data):
-    x = 0
+def part1(raw_data):
+    modifiers = [
+        lambda v, p: v * p,
+        lambda v, p: v + p,
+    ]
     data = _make_data_p1(raw_data)
+    x = 0
     for total, values in data:
-        p2 = Part2(total, values)
-        if p2:
+        p1 = BridgeCalibrator(total, values, modifiers)
+        if p1:
             x += total
     print(x)
 
