@@ -13,10 +13,6 @@ def get_input(test):
     return lines
 
 
-def part2(data):
-    pass
-
-
 class _Part1(object):
     def __init__(self, values, previous):
         self.value = values[0]
@@ -62,6 +58,44 @@ def part1(raw_data):
             x += total
     print(x)
 
+
+class _Part2(_Part1):
+    def __init__(self, values, previous):
+        # There's a quirk with order of operations if you try to use super().__init__ and then add
+        # concat here, so just re-implementing for readability.
+        self.value = values[0]
+        self.multiply = self.value * previous
+        self.add = self.value + previous
+        self.concat = int(f"{previous}{self.value}")
+
+        self.next_add = None
+        self.next_multiply = None
+        self.next_concat = None
+        if values[1:]:
+            self.next_add = _Part2(values[1:], self.add)
+            self.next_multiply = _Part2(values[1:], self.multiply)
+            self.next_concat = _Part2(values[1:], self.concat)
+
+    def __eq__(self, value):
+        if self.next_add:
+            return super().__eq__(value) or self.next_concat == value
+        return value in [self.add, self.multiply, self.concat]
+
+
+class Part2(Part1):
+    def __init__(self, total, values):
+        self.total = total
+        self.values_tree = _Part2(values[1:], values[0])
+
+
+def part2(raw_data):
+    x = 0
+    data = _make_data_p1(raw_data)
+    for total, values in data:
+        p2 = Part2(total, values)
+        if p2:
+            x += total
+    print(x)
 
 
 def main():
