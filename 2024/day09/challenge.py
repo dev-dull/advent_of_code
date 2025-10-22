@@ -48,7 +48,8 @@ class AmphipodFS2(AmphipodFS1):
         for i in range(end_position-1, -1, -1):
             if self.disk_map[i] != ".":
                 # Question: is the built-in `[].index()` faster than continuing to search backwards?
-                # It would have to be tested. If so, uncomment next line and remove dead code.
+                # Because we care about the _end_ of the list, it would have to be tested. If faster, uncomment
+                # the next line and remove dead code.
                 # return self.disk_map.index(self.disk_map[i]), i+1
                 j = i
                 while self.disk_map[j] == self.disk_map[i]:
@@ -59,8 +60,8 @@ class AmphipodFS2(AmphipodFS1):
         return None
 
     def _find_free_space(self, required_size):
-        # It's a little hacky to use the string to find the free space, but I expect that
-        # Python's built-in `"".index()` is faster than anything I would write here.
+        # It's a little hacky to use the string to find the free space, but because we care about space closer
+        # to the _start_, I expect that Python's built-in `"".index()` is faster than anything I would write here.
         size_string = "." * required_size
         str_map = str(self)
         if size_string in str_map:
