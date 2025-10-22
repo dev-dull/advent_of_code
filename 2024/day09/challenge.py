@@ -13,7 +13,7 @@ def get_input(test):
     return lines
 
 
-class AmphipodFS(object):
+class AmphipodFS1(object):
     def __init__(self, compressed_disk_map):
         self._blocks_moved = 0
         self.disk_map = []
@@ -43,13 +43,51 @@ class AmphipodFS(object):
         return ''.join([str(c)[0] for c in self.disk_map] + ["."] * self._blocks_moved)
 
 
+class AmphipodFS2(AmphipodFS1):
+    def _get_last_file(self, end_position):
+        for i in range(end_position-1, -1, -1):
+            if self.disk_map[i] != ".":
+                # Question: is the built-in `[].index()` faster than continuing to search backwards?
+                # It would have to be tested. If so, uncomment next line and remove dead code.
+                # return self.disk_map.index(self.disk_map[i]), i+1
+                j = i
+                while self.disk_map[j] == self.disk_map[i]:
+                    j -= 1
+                # `j+1` since we'll step back one time too many
+                # `i+1` since `"string"[j:i]` omits the `i` position (`<` and not `<=`)
+                return j+1, i+1
+        return None
+
+    def _find_free_space(self, required_size):
+        # It's a little hacky to use the string to find the free space, but I expect that
+        # Python's built-in `"".index()` is faster than anything I would write here.
+        size_string = "." * required_size
+        str_map = str(self)
+        if size_string in str_map:
+            return str_map.index(size_string)
+        return None
+
+    def defragment(self):
+        end_position = len(self.disk_map)
+        while end_position > 0:
+            sof, eof = self._get_last_file(end_position)
+            free = self._find_free_space(eof-sof)
+            if free and free < sof:
+                for free_i, data_i in zip(range(free, free+(eof-sof)), range(sof, eof)):
+                    self.disk_map[free_i] = self.disk_map[data_i]
+                    self.disk_map[data_i] = "."
+
+            end_position = sof
+
 
 def part2(data):
-    pass
+    fs = AmphipodFS2(data)
+    fs.defragment()
+    print(fs.AmP5())
 
 
 def part1(data):
-    fs = AmphipodFS(data)
+    fs = AmphipodFS1(data)
     fs.defragment()
     print(fs.AmP5())
 
